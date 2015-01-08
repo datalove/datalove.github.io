@@ -7,6 +7,15 @@
     <atom:link href="http://datalove.org/feed.xml" rel="self" type="application/rss+xml" />
     
       <item>
+        <title>testing again</title>
+        <description>&lt;p&gt;Here&amp;rsquo;s some text&lt;/p&gt;
+</description>
+        <pubDate>Wed, 07 Jan 2015 00:00:00 +0800</pubDate>
+        <link>http://datalove.org/r/2015/01/07/testing-again/</link>
+        <guid isPermaLink="true">http://datalove.org/r/2015/01/07/testing-again/</guid>
+      </item>
+    
+      <item>
         <title>A touch of R</title>
         <description>&lt;p&gt;Just a test to see how well it deals with R and stuff.&lt;/p&gt;
 
@@ -22,44 +31,9 @@
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-rconsole&quot; data-lang=&quot;rconsole&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;python.call&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;concat&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; a&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; b&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;go&quot;&gt;[1] 1 2 3 4 5 6 7 8&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 </description>
-        <pubDate>Wed, 07 Jan 2015 15:53:00 +0800</pubDate>
-        <link>http://datalove.org/r/2015/01/07/test-R-script/</link>
-        <guid isPermaLink="true">http://datalove.org/r/2015/01/07/test-R-script/</guid>
-      </item>
-    
-      <item>
-        <title>testing again</title>
-        <description>&lt;p&gt;Here&amp;rsquo;s some text&lt;/p&gt;
-</description>
-        <pubDate>Wed, 07 Jan 2015 00:00:00 +0800</pubDate>
-        <link>http://datalove.org/r/2015/01/07/testing-again/</link>
-        <guid isPermaLink="true">http://datalove.org/r/2015/01/07/testing-again/</guid>
-      </item>
-    
-      <item>
-        <title>Hello, Pixyll</title>
-        <description>&lt;p&gt;Hello.&lt;/p&gt;
-
-&lt;p&gt;Pixyll is a simple, beautiful theme for Jekyll that emphasizes content rather than aesthetic fluff. It&amp;rsquo;s mobile &lt;em&gt;first&lt;/em&gt;, fluidly responsive, and delightfully lightweight.&lt;/p&gt;
-
-&lt;p&gt;It&amp;rsquo;s pretty minimal, but leverages large type and drastic contrast to make a statement, on all devices.&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;
-    Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.
-  &lt;/p&gt;
-  &lt;footer&gt;&lt;cite title=&quot;Antoine de Saint-Exupéry&quot;&gt;Antoine de Saint-Exupéry&lt;/cite&gt;&lt;/footer&gt;
-&lt;/blockquote&gt;
-
-&lt;h2 id=&quot;where-is-it?&quot;&gt;Where is it?&lt;/h2&gt;
-
-&lt;p&gt;Checkout the &lt;a href=&quot;https://github.com/johnotander/pixyll&quot;&gt;Github repository&lt;/a&gt; to download it, request a feature, or report a bug.&lt;/p&gt;
-
-&lt;p&gt;It&amp;rsquo;s free, and open source (&lt;a href=&quot;http://opensource.org/licenses/MIT&quot;&gt;MIT&lt;/a&gt;).&lt;/p&gt;
-</description>
-        <pubDate>Wed, 11 Jun 2014 23:31:19 +0800</pubDate>
-        <link>http://datalove.org/jekyll/pixyll/2014/06/11/welcome-to-pixyll/</link>
-        <guid isPermaLink="true">http://datalove.org/jekyll/pixyll/2014/06/11/welcome-to-pixyll/</guid>
+        <pubDate>Tue, 06 Jan 2015 00:00:00 +0800</pubDate>
+        <link>http://datalove.org/r/2015/01/06/test-R-script/</link>
+        <guid isPermaLink="true">http://datalove.org/r/2015/01/06/test-R-script/</guid>
       </item>
     
       <item>
@@ -153,32 +127,6 @@ or add, features.&lt;/p&gt;
         <pubDate>Tue, 10 Jun 2014 20:31:19 +0800</pubDate>
         <link>http://datalove.org/jekyll/pixyll/2014/06/10/see-pixyll-in-action/</link>
         <guid isPermaLink="true">http://datalove.org/jekyll/pixyll/2014/06/10/see-pixyll-in-action/</guid>
-      </item>
-    
-      <item>
-        <title>So, What is Jekyll?</title>
-        <description>&lt;p&gt;Jekyll is a tool for transforming your plain text into static websites and 
-blogs. It is simple, static, and blog-aware. Jekyll uses the 
-&lt;a href=&quot;http://docs.shopify.com/themes/liquid-basics&quot;&gt;Liquid&lt;/a&gt; templating
-language and has builtin &lt;a href=&quot;http://daringfireball.net/projects/markdown/&quot;&gt;Markdown&lt;/a&gt;
-and &lt;a href=&quot;http://en.wikipedia.org/wiki/Textile_(markup_language)&quot;&gt;Textile&lt;/a&gt; support.&lt;/p&gt;
-
-&lt;p&gt;It also ties in nicely to &lt;a href=&quot;https://pages.github.com/&quot;&gt;Github Pages&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Learn more about Jekyll on their &lt;a href=&quot;http://jekyllrb.com/&quot;&gt;website&lt;/a&gt;.&lt;/p&gt;
-</description>
-        <pubDate>Mon, 09 Jun 2014 20:32:18 +0800</pubDate>
-        <link>http://datalove.org/jekyll/pixyll/2014/06/09/so-what-is-jekyll/</link>
-        <guid isPermaLink="true">http://datalove.org/jekyll/pixyll/2014/06/09/so-what-is-jekyll/</guid>
-      </item>
-    
-      <item>
-        <title>Pixyll has Pagination</title>
-        <description>&lt;p&gt;This is an empty post to illustrate the pagination component with Pixyll.&lt;/p&gt;
-</description>
-        <pubDate>Sun, 08 Jun 2014 19:21:29 +0800</pubDate>
-        <link>http://datalove.org/jekyll/pixyll/2014/06/08/pixyll-has-pagination/</link>
-        <guid isPermaLink="true">http://datalove.org/jekyll/pixyll/2014/06/08/pixyll-has-pagination/</guid>
       </item>
     
   </channel>

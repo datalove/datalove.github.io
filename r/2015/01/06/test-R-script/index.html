@@ -3,12 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>testing again &#8211; Datalove</title>
+    <title>A touch of R &#8211; Datalove</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="this is jsut a test to see if it works">
+    <meta name="description" content="This is just a test to see how jekyll works with a feed specifically for R">
     <meta name="author" content="Tommy O'Dell">
     <meta name="keywords" content="r">
-    <link rel="canonical" href="http://datalove.org/r/2015/01/07/testing-again/">
+    <link rel="canonical" href="http://datalove.org/r/2015/01/06/test-R-script/">
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/pixyll.css" type="text/css">
@@ -24,9 +24,9 @@
     <!-- From: https://github.com/mmistakes/hpstr-jekyll-theme/blob/master/_includes/head.html -->
     <meta property="og:locale" content="en_US">
     <meta property="og:type" content="article">
-    <meta property="og:title" content="testing again">
+    <meta property="og:title" content="A touch of R">
     <meta property="og:description" content="Oh for the love of data!">
-    <meta property="og:url" content="http://datalove.org/r/2015/01/07/testing-again/">
+    <meta property="og:url" content="http://datalove.org/r/2015/01/06/test-R-script/">
     <meta property="og:site_name" content="Datalove">
 
     <!-- Icons -->
@@ -97,14 +97,26 @@
 
 
 <div class="post-header mb2">
-  <h1>testing again</h1>
-  <span class="post-meta">Jan 7, 2015</span><br>
+  <h1>A touch of R</h1>
+  <span class="post-meta">Jan 6, 2015</span><br>
   
   <span class="post-meta small">1 minute read</span>
 </div>
 
 <article class="post-content">
-  <p>Here&rsquo;s some text</p>
+  <p>Just a test to see how well it deals with R and stuff.</p>
+
+<p>So here&rsquo;s some R code.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="lineno">1</span> x <span class="o">&lt;-</span> rnorm<span class="p">(</span><span class="m">100</span><span class="p">,</span><span class="m">100</span><span class="p">,</span><span class="m">10</span><span class="p">)</span>
+<span class="lineno">2</span>   y <span class="o">&lt;-</span> x <span class="o">+</span> rnorm<span class="p">(</span><span class="m">100</span><span class="p">,</span><span class="m">5</span><span class="p">,</span><span class="m">1</span><span class="p">)</span>
+<span class="lineno">3</span>   mylm <span class="o">&lt;-</span> lm<span class="p">(</span>x <span class="o">~</span> y<span class="p">)</span>
+<span class="lineno">4</span>   plot<span class="p">(</span>mylm<span class="p">)</span></code></pre></div>
+
+<p>And here&rsquo;s the output of some random R code at the console.</p>
+
+<div class="highlight"><pre><code class="language-rconsole" data-lang="rconsole"><span class="gp">&gt; </span>python.call<span class="p">(</span> <span class="s">&quot;concat&quot;</span><span class="p">,</span> a<span class="p">,</span> b<span class="p">)</span>
+<span class="go">[1] 1 2 3 4 5 6 7 8</span></code></pre></div>
 
 </article>
 
@@ -114,7 +126,7 @@
   <div id="disqus_thread"></div>
   <script type="text/javascript">
     var disqus_shortname  = 'datalove';
-    var disqus_identifier = '/r/2015/01/07/testing-again';
+    var disqus_identifier = '/r/2015/01/06/test-R-script';
 
     (function() {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

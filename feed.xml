@@ -7,126 +7,356 @@
     <atom:link href="http://datalove.org/feed.xml" rel="self" type="application/rss+xml" />
     
       <item>
-        <title>testing again</title>
-        <description>&lt;p&gt;Here&amp;rsquo;s some text&lt;/p&gt;
+        <title>dplyr in 100 lines (Pt3 mutate)</title>
+        <description>&lt;h2 id=&quot;mutating-in-base-r&quot;&gt;Mutating in base R&lt;/h2&gt;
+
+&lt;p&gt;In base R, the easiest way to create or modify a dataframe column interactively
+is to use R&amp;rsquo;s &lt;code&gt;$&lt;/code&gt; operator.&lt;/p&gt;
+
+&lt;p&gt;For example, to create a column for &lt;code&gt;liters/100km&lt;/code&gt; we could do as follows:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;mtcars&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;lpk &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; mtcars&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;mpg &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1.61&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3.76&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;But since it&amp;rsquo;s generally best to avoid R&amp;rsquo;s &lt;code&gt;$&lt;/code&gt; operator inside of a function
+because of the way &lt;code&gt;$&lt;/code&gt; does partial matching, we&amp;rsquo;ll instead use R&amp;rsquo;s &lt;code&gt;[&lt;/code&gt;
+operator for assignment.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;mtcars&lt;span class=&quot;p&quot;&gt;[,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;lpk&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; mtcars&lt;span class=&quot;p&quot;&gt;[,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;mpg&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1.61&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3.76&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;mutating-in-dplyr&quot;&gt;Mutating in dplyr&lt;/h2&gt;
+
+&lt;p&gt;In dplyr if we wanted to create a logical column as to whether or not a fuel
+mileage was good, we could run this command.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;dplyr&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;mutate&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; good_mpg &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; mpg &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Compare this to what we had in our &lt;code&gt;dplyr::filter&lt;/code&gt;, with the only difference
+being assignment in the 
+&lt;code class=&quot;highlight language-r&quot; data-lang=&quot;r&quot;&gt;good_mpg &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;/code&gt;
+ part.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;dplyr&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;filter&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; mpg &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;replicating-mutate&quot;&gt;Replicating &lt;code&gt;mutate&lt;/code&gt;&lt;/h2&gt;
+
+&lt;p&gt;Following the basic template from &lt;code&gt;filter2()&lt;/code&gt; gives us something like this.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;mutate2 &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;data&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+  expr &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;eval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;substitute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;alist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+
+  &lt;span class=&quot;kr&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;i &lt;span class=&quot;kr&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;seq_along&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;expr&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    e &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; expr&lt;span class=&quot;p&quot;&gt;[[&lt;/span&gt;i&lt;span class=&quot;p&quot;&gt;]]&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# do something&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;  
+  data
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Since we&amp;rsquo;re reusing 
+&lt;code class=&quot;highlight language-r&quot; data-lang=&quot;r&quot;&gt;expr &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;eval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;substitute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;alist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;&lt;/code&gt;
+ here
+(and we&amp;rsquo;ll be using it again), let&amp;rsquo;s create a separate function and update our template.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;dots &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kp&quot;&gt;eval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;substitute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;alist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;mutate2 &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;data&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+  expr &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; dots&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;kr&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;i &lt;span class=&quot;kr&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;seq_along&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;expr&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    e &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; expr&lt;span class=&quot;p&quot;&gt;[[&lt;/span&gt;i&lt;span class=&quot;p&quot;&gt;]]&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# do something&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;  
+  data
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;attempt-#1&quot;&gt;Attempt #1&lt;/h2&gt;
+
+&lt;p&gt;The first thing we have to do differently in &lt;code&gt;mutate2()&lt;/code&gt; is to capture the
+names of the columns we&amp;rsquo;re creating or modifying.&lt;/p&gt;
+
+&lt;p&gt;Lucky for us, our &lt;code&gt;dots()&lt;/code&gt; function actually returns a &lt;em&gt;named&lt;/em&gt; list when the
+expressions contain an assignment.&lt;/p&gt;
+
+&lt;p&gt;We access the names of our new columns using 
+&lt;code class=&quot;highlight language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;kp&quot;&gt;names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;dots&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;&lt;/code&gt;
+ or simply 
+&lt;code class=&quot;highlight language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;kp&quot;&gt;names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;expr&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;
+.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;mutate2 &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;data&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+  expr &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; dots&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  nm   &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;expr&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;kr&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;i &lt;span class=&quot;kr&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;seq_along&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;expr&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    e &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; expr&lt;span class=&quot;p&quot;&gt;[[&lt;/span&gt;i&lt;span class=&quot;p&quot;&gt;]]&lt;/span&gt;
+    n &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; nm&lt;span class=&quot;p&quot;&gt;[[&lt;/span&gt;i&lt;span class=&quot;p&quot;&gt;]]&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;# do the assignment&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;  
+  data
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;attempt-#2&quot;&gt;Attempt #2&lt;/h2&gt;
+
+&lt;p&gt;Now all we need to add is the actual assignment part.&lt;/p&gt;
+
+&lt;p&gt;Remember that the pattern from base R that we&amp;rsquo;re trying to replicate looks like
+this:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;mtcars&lt;span class=&quot;p&quot;&gt;[,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;lpk&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; mtcars&lt;span class=&quot;p&quot;&gt;[,&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;mpg&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1.61&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3.76&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;So all we need to do is add the following snippet in &lt;code&gt;mutate2()&lt;/code&gt; for the assignment
+part.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;data&lt;span class=&quot;p&quot;&gt;[,&lt;/span&gt;n&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;eval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;e&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; data&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;And that gives us our final version of &lt;code&gt;mutate2()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;mutate2 &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;data&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  expr &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; dots&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  nm   &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;names&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;expr&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+  &lt;span class=&quot;kr&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;i &lt;span class=&quot;kr&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;seq_along&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;arg&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    e &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; expr&lt;span class=&quot;p&quot;&gt;[[&lt;/span&gt;i&lt;span class=&quot;p&quot;&gt;]]&lt;/span&gt;
+    n &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; nm&lt;span class=&quot;p&quot;&gt;[[&lt;/span&gt;i&lt;span class=&quot;p&quot;&gt;]]&lt;/span&gt;
+    data&lt;span class=&quot;p&quot;&gt;[,&lt;/span&gt;n&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;eval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;e&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; data&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;  
+  data
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;testing-mutate2()&quot;&gt;Testing &lt;code&gt;mutate2()&lt;/code&gt;&lt;/h2&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-rconsole&quot; data-lang=&quot;rconsole&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;mutate2&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  lpk &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; mpg &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1.61&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3.76&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; good_mpg &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; mpg &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;asdff&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;               mpg  cyl  disp  hp drat    wt  qsec vs am gear carb       new      lpk good_mpg
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Mazda RX4           21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4  8.992021 8.992021    FALSE
+Mazda RX4 Wag       21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4  8.992021 8.992021    FALSE
+Datsun 710          22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1  9.762766 9.762766    FALSE&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;asdfsdf&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;dplyr&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;mutate&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; lpk &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; mpg &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1.61&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3.76&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 </description>
-        <pubDate>Wed, 07 Jan 2015 00:00:00 +0800</pubDate>
-        <link>http://datalove.org/r/2015/01/07/testing-again/</link>
-        <guid isPermaLink="true">http://datalove.org/r/2015/01/07/testing-again/</guid>
+        <pubDate>Tue, 27 Jan 2015 00:00:00 +0800</pubDate>
+        <link>http://datalove.org/r/dplyr/2015/01/27/dplyr-100-lines-03-mutate/</link>
+        <guid isPermaLink="true">http://datalove.org/r/dplyr/2015/01/27/dplyr-100-lines-03-mutate/</guid>
       </item>
     
       <item>
-        <title>A touch of R</title>
-        <description>&lt;p&gt;Just a test to see how well it deals with R and stuff.&lt;/p&gt;
+        <title>dplyr in 100 lines (Pt2 filter)</title>
+        <description>&lt;h2 id=&quot;replicating-filter&quot;&gt;Replicating &lt;code&gt;filter&lt;/code&gt;&lt;/h2&gt;
 
-&lt;p&gt;So here&amp;rsquo;s some R code.&lt;/p&gt;
+&lt;p&gt;The most common way to subset a data frame in R is to use the &lt;code&gt;[]&lt;/code&gt; function.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;lineno&quot;&gt;1&lt;/span&gt; x &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; rnorm&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;2&lt;/span&gt;   y &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; x &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; rnorm&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;100&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;3&lt;/span&gt;   mylm &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; lm&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;x &lt;span class=&quot;o&quot;&gt;~&lt;/span&gt; y&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;lineno&quot;&gt;4&lt;/span&gt;   plot&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mylm&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;If you wanted to see only cars form the 
+&lt;code class=&quot;highlight language-r&quot; data-lang=&quot;r&quot;&gt;mtcars&lt;/code&gt;
+ data set, you do something like
+this.  &lt;/p&gt;
 
-&lt;p&gt;And here&amp;rsquo;s the output of some random R code at the console.&lt;/p&gt;
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-rconsole&quot; data-lang=&quot;rconsole&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;mpg &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,]&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;Error in `[.data.frame`(mtcars, mpg &amp;gt; 30, ) : object &amp;#39;mpg&amp;#39; not found&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-rconsole&quot; data-lang=&quot;rconsole&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;python.call&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;concat&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; a&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; b&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;go&quot;&gt;[1] 1 2 3 4 5 6 7 8&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Oops! We forgot to tell R that &lt;code&gt;mpg&lt;/code&gt; is a column in &lt;code&gt;mtcars&lt;/code&gt;, and not a variable
+in our environment.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-rconsole&quot; data-lang=&quot;rconsole&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;mtcars&lt;span class=&quot;o&quot;&gt;$&lt;/span&gt;mpg &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,]&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;mpg cyl disp  hp drat    wt  qsec vs am gear carb&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;Fiat 128       32.4   4 78.7  66 4.08 2.200 19.47  1  1    4    1&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;Honda Civic    30.4   4 75.7  52 4.93 1.615 18.52  1  1    4    2&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;Toyota Corolla 33.9   4 71.1  65 4.22 1.835 19.90  1  1    4    1&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;Lotus Europa   30.4   4 95.1 113 3.77 1.513 16.90  1  1    5    2&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;attempt-#1&quot;&gt;Attempt #1&lt;/h2&gt;
+
+&lt;p&gt;We&amp;rsquo;ll use R&amp;rsquo;s built in subsetting operator, writing a function to accept a dataframe
+and a filtering expression (i.e. the 
+&lt;code class=&quot;highlight language-r&quot; data-lang=&quot;r&quot;&gt;mpg &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;30&lt;/span&gt;&lt;/code&gt;
+ part)&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;filter2 &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;data&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;expr&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; data&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;expr&lt;span class=&quot;p&quot;&gt;,]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Let&amp;rsquo;s try our first function.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-rconsole&quot; data-lang=&quot;rconsole&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;filter2&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; mpg &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;Error in `[.data.frame`(data, expr, ) : object &amp;#39;mpg&amp;#39; not found&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;No luck! Que pasa? We get the error we had previously.&lt;/p&gt;
+
+&lt;p&gt;Let&amp;rsquo;s investigate by changing our function to print the value if the expression argument.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; filter2 &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;data&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;expr&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;expr&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;And run it again.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-rconsole&quot; data-lang=&quot;rconsole&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;filter2&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; mpg &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;Error in print(expr) : object &amp;#39;mpg&amp;#39; not found&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;In addition: Warning message:&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;In print(expr) : restarting interrupted promise evaluation&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;No love either. What&amp;rsquo;s going on?&lt;/p&gt;
+
+&lt;p&gt;Looks like R tries (and fails) to evaluate 
+&lt;code class=&quot;highlight language-r&quot; data-lang=&quot;r&quot;&gt;mpg &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;30&lt;/span&gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;as soon as we try to do anything with it&amp;hellip;&lt;/p&gt;
+
+&lt;h2 id=&quot;attempt-#2&quot;&gt;Attempt #2&lt;/h2&gt;
+
+&lt;p&gt;What we need is &lt;code&gt;substitute()&lt;/code&gt;, a special primitive function that does not evaluate its
+arguments and returns a &lt;code&gt;call&lt;/code&gt; object that can be evaluated later.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;filter2 &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;data&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;expr&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;substitute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;expr&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;And now it works. A great first step!&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-rconsole&quot; data-lang=&quot;rconsole&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;filter2&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; mpg &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;mpg &amp;gt; 30&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Because &lt;code&gt;substitute()&lt;/code&gt; returns an unevaluated call, we&amp;rsquo;ll need to use it in
+conjunction with the &lt;code&gt;eval()&lt;/code&gt; function.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; filter2 &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;data&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;expr&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; data&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;eval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;substitute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;expr&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; data&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;And&amp;hellip;.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-rconsole&quot; data-lang=&quot;rconsole&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;filter2&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; mpg &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;mpg cyl disp  hp drat    wt  qsec vs am gear carb&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;Fiat 128       32.4   4 78.7  66 4.08 2.200 19.47  1  1    4    1&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;Honda Civic    30.4   4 75.7  52 4.93 1.615 18.52  1  1    4    2&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;Toyota Corolla 33.9   4 71.1  65 4.22 1.835 19.90  1  1    4    1&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;Lotus Europa   30.4   4 95.1 113 3.77 1.513 16.90  1  1    5    2&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Congrats! Our first working version of &lt;code&gt;filter2()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;We still have a bit of work to do though - &lt;code&gt;dplyr::filter&lt;/code&gt; can take any number of
+filter arguments as shown below.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-rconsole&quot; data-lang=&quot;rconsole&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;dplyr&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;filter&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; mpg &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; carb &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; gear &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;mpg cyl disp  hp drat    wt qsec vs am gear carb&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;1 30.4   4 95.1 113 3.77 1.513 16.9  1  1    5    2&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;attempt-#3&quot;&gt;Attempt #3&lt;/h2&gt;
+
+&lt;p&gt;What changes do we need to make to &lt;code&gt;filter2()&lt;/code&gt;?&lt;/p&gt;
+
+&lt;p&gt;Adding a &lt;code&gt;...&lt;/code&gt; argument to our function will allow us to specify an arbitrary
+number of filtering expressions.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;filter2 &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;data&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;And the &lt;code&gt;alist()&lt;/code&gt; function is useful with &lt;code&gt;...&lt;/code&gt; to capture a number of
+expressions as function input. Inside &lt;code&gt;filter2()&lt;/code&gt; we&amp;rsquo;ll stil need to use &lt;code&gt;eval&lt;/code&gt;
+and &lt;code&gt;substitute&lt;/code&gt; as before.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;expr &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;eval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;substitute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;alist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Then we can access each filter expression supplied by the user by
+subsetting the list of arguments like 
+&lt;code class=&quot;highlight language-r&quot; data-lang=&quot;r&quot;&gt;expr&lt;span class=&quot;p&quot;&gt;[[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]]&lt;/span&gt;&lt;/code&gt;
+ or 
+&lt;code class=&quot;highlight language-r&quot; data-lang=&quot;r&quot;&gt;expr&lt;span class=&quot;p&quot;&gt;[[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]]&lt;/span&gt;&lt;/code&gt;
+. What we now want to do is repeatedly filter our
+data for each item in the &lt;code&gt;expr&lt;/code&gt; list.&lt;/p&gt;
+
+&lt;p&gt;In most situations in R, we want to use &lt;code&gt;lapply&lt;/code&gt; to do something to each element
+in a list. But in this case, we can&amp;rsquo;t use it since we want pass the filtered
+results from each expression to the next. Here, a &lt;code&gt;for&lt;/code&gt; loop is most
+appropriate.&lt;/p&gt;
+
+&lt;p&gt;That leads us to our final function.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;filter2 &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;data&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+  expr &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;eval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;substitute&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;alist&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kc&quot;&gt;...&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+
+  &lt;span class=&quot;kr&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;i &lt;span class=&quot;kr&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;seq_along&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;expr&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    e &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; expr&lt;span class=&quot;p&quot;&gt;[[&lt;/span&gt;i&lt;span class=&quot;p&quot;&gt;]]&lt;/span&gt;  
+    data &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; data&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;kp&quot;&gt;eval&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;e&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;data&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;  
+  data
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;testing-filter2()&quot;&gt;Testing &lt;code&gt;filter2()&lt;/code&gt;&lt;/h3&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-rconsole&quot; data-lang=&quot;rconsole&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;filter2&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; mpg &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; carb &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; gear &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;mpg cyl disp  hp drat    wt qsec vs am gear carb&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;1 30.4   4 95.1 113 3.77 1.513 16.9  1  1    5    2&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;And pleasingly, we don&amp;rsquo;t need anything extra to cater for more complex
+filter expressions like the ones below, which filters out the bottom 80% least
+fuel efficient cars, and keeps only those whose displacement per cylinder
+exceeds 3o cubic inches per cylinder.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-rconsole&quot; data-lang=&quot;rconsole&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;filter2&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; mpg &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; quantile&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mpg&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0.80&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; disp&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;cyl &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;mpg           cyl  disp hp drat   wt qsec vs am gear carb&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;Merc 240D     24.4   4 146.7 62 3.69 3.19 20.0  1  0    4    2&lt;/span&gt;
+&lt;span class=&quot;go&quot;&gt;Porsche 914-2 26.0   4 120.3 91 4.43 2.14 16.7  0  1    5    2&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;In the next section, we&amp;rsquo;ll build &lt;code&gt;mutate2()&lt;/code&gt;.&lt;/p&gt;
 </description>
-        <pubDate>Tue, 06 Jan 2015 00:00:00 +0800</pubDate>
-        <link>http://datalove.org/r/2015/01/06/test-R-script/</link>
-        <guid isPermaLink="true">http://datalove.org/r/2015/01/06/test-R-script/</guid>
+        <pubDate>Mon, 26 Jan 2015 00:00:00 +0800</pubDate>
+        <link>http://datalove.org/r/dplyr/2015/01/26/dplyr-100-lines-02-filter/</link>
+        <guid isPermaLink="true">http://datalove.org/r/dplyr/2015/01/26/dplyr-100-lines-02-filter/</guid>
       </item>
     
       <item>
-        <title>Pixyll in Action</title>
-        <description>&lt;p&gt;There is a significant amount of subtle, yet precisely calibrated, styling to ensure
-that your content is emphasized while still looking aesthetically pleasing.&lt;/p&gt;
+        <title>dplyr in 100 lines (Pt1 intro)</title>
+        <description>&lt;p&gt;If you&amp;rsquo;ve been around R for a little while, you&amp;rsquo;ve most likely heard
+of Hadley Wickham. His amazing packages (including &lt;strong&gt;ggplot2&lt;/strong&gt;, &lt;strong&gt;reshape2&lt;/strong&gt;,
+&lt;strong&gt;plyr&lt;/strong&gt; and many more) have shaped the R ecosystem into what it is today.
+Without them, it&amp;rsquo;s unlikely I would have continued learning R.&lt;/p&gt;
 
-&lt;p&gt;All links are easy to &lt;a href=&quot;#&quot;&gt;locate and discern&lt;/a&gt;, yet don&amp;rsquo;t detract from the harmony
-of a paragraph. The &lt;em&gt;same&lt;/em&gt; goes for italics and &lt;strong&gt;bold&lt;/strong&gt; elements. Even the the strikeout
-works if &lt;del&gt;for some reason you need to update your post&lt;/del&gt;. For consistency&amp;rsquo;s sake,
-&lt;ins&gt;The same goes for insertions&lt;/ins&gt;, of course.&lt;/p&gt;
+&lt;p&gt;One of Hadley&amp;rsquo;s latest packages is called &lt;strong&gt;dplyr&lt;/strong&gt;, and it&amp;rsquo;s an absolute game-changer.
+I was giddy with excitement the first time I saw a demonstration. It
+lets you perform almost any data manipulation task as a series of
+five simple verbs; 
+&lt;code class=&quot;highlight language-r&quot; data-lang=&quot;r&quot;&gt;mutate&lt;/code&gt;
+,
+&lt;code class=&quot;highlight language-r&quot; data-lang=&quot;r&quot;&gt;filter&lt;/code&gt;
+, 
+&lt;code class=&quot;highlight language-r&quot; data-lang=&quot;r&quot;&gt;arrange&lt;/code&gt;
+,
+&lt;code class=&quot;highlight language-r&quot; data-lang=&quot;r&quot;&gt;group_by&lt;/code&gt;
+ and 
+&lt;code class=&quot;highlight language-r&quot; data-lang=&quot;r&quot;&gt;summarise&lt;/code&gt;
+.&lt;/p&gt;
 
-&lt;h3 id=&quot;code,-with-syntax-highlighting&quot;&gt;Code, with syntax highlighting&lt;/h3&gt;
+&lt;p&gt;A lot of effort was put into making it as fast as possible, while
+maintaining an incredibly simple syntax. In most cases, it approaches
+the speed of the amazing data.table package, but with a much more
+approachable syntax. And to boot, it lets us transparently use
+out-of-memory (i.e. in-database) data as if it were a local dataframe.&lt;/p&gt;
 
-&lt;p&gt;Code blocks use the &lt;a href=&quot;http://ethanschoonover.com/solarized&quot;&gt;solarized&lt;/a&gt; theme. Both the light and
-dark versions are included, so you can swap them out easily. &lt;em&gt;Solarized Dark&lt;/em&gt; is the default.&lt;/p&gt;
+&lt;p&gt;Fast forward a few months and Hadley&amp;rsquo;s new R book, Advanced R, was
+being updated on his website as he wrote it. It wasn&amp;rsquo;t until a print
+copy of his book was available that I put serious effort into going
+through the content. And I&amp;rsquo;m glad to say it&amp;rsquo;s as thorough and well
+written as we&amp;rsquo;ve come to expect.&lt;/p&gt;
 
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-ruby&quot; data-lang=&quot;ruby&quot;&gt;&lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Awesome&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;ActiveRecord&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;Base&lt;/span&gt;
-  &lt;span class=&quot;kp&quot;&gt;include&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;EvenMoreAwesome&lt;/span&gt;
+&lt;p&gt;I&amp;rsquo;ve wanted to peer under the hood of dplyr for a while to figure
+out how it works, but to a intermediate R programmer like myself,
+the codebase was a bit too complex.&lt;/p&gt;
 
-  &lt;span class=&quot;n&quot;&gt;validates_presence_of&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:something&lt;/span&gt;
-  &lt;span class=&quot;n&quot;&gt;validates&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:email&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;email_format&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;true&lt;/span&gt;
+&lt;p&gt;Instead of using dplyr&amp;rsquo;s codebase to figure out how dplyr works,
+I decided to use what I was learning in Advanced R to write my own
+version, using only base R function.&lt;/p&gt;
 
-  &lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;email&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kp&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-    &lt;span class=&quot;nb&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;email&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;email&lt;/span&gt;
-    &lt;span class=&quot;nb&quot;&gt;self&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;name&lt;/span&gt;
-  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Turns out all that&amp;rsquo;s needed is about 70 lines of code.&lt;/p&gt;
 
-&lt;h1 id=&quot;headings!&quot;&gt;Headings!&lt;/h1&gt;
-
-&lt;p&gt;They&amp;rsquo;re responsive, and well-proportioned (in &lt;code&gt;padding&lt;/code&gt;, &lt;code&gt;line-height&lt;/code&gt;, &lt;code&gt;margin&lt;/code&gt;, and &lt;code&gt;font-size&lt;/code&gt;).
-They also heavily rely on the awesome utility, &lt;a href=&quot;http://www.basscss.com/&quot;&gt;BASSCSS&lt;/a&gt;.&lt;/p&gt;
-
-&lt;h5 id=&quot;they-draw-the-perfect-amount-of-attention&quot;&gt;They draw the perfect amount of attention&lt;/h5&gt;
-
-&lt;p&gt;This allows your content to have the proper informational and contextual hierarchy. Yay.&lt;/p&gt;
-
-&lt;h3 id=&quot;there-are-lists,-too&quot;&gt;There are lists, too&lt;/h3&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Apples&lt;/li&gt;
-&lt;li&gt;Oranges&lt;/li&gt;
-&lt;li&gt;Potatoes&lt;/li&gt;
-&lt;li&gt;Milk&lt;/li&gt;
-&lt;li&gt;oranges&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;ol&gt;
-&lt;li&gt;Mow the lawn&lt;/li&gt;
-&lt;li&gt;Feed the dog&lt;/li&gt;
-&lt;li&gt;Dance&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&quot;images-look-great,-too&quot;&gt;Images look great, too&lt;/h3&gt;
-
-&lt;p&gt;&lt;img src=&quot;https://cloud.githubusercontent.com/assets/1424573/3378137/abac6d7c-fbe6-11e3-8e09-55745b6a8176.png&quot; alt=&quot;desk&quot;&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;there-are-also-pretty-colors&quot;&gt;There are also pretty colors&lt;/h3&gt;
-
-&lt;p&gt;Also the result of &lt;a href=&quot;http://www.basscss.com/&quot;&gt;BASSCSS&lt;/a&gt;, you can &lt;span class=&quot;bg-dark-gray white&quot;&gt;highlight&lt;/span&gt; certain components
-of a &lt;span class=&quot;red&quot;&gt;post&lt;/span&gt; &lt;span class=&quot;mid-gray&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;green&quot;&gt;CSS&lt;/span&gt; &lt;span class=&quot;orange&quot;&gt;classes&lt;/span&gt;.&lt;/p&gt;
-
-&lt;p&gt;I don&amp;rsquo;t recommend using blue, though. It looks like a &lt;span class=&quot;blue&quot;&gt;link&lt;/span&gt;.&lt;/p&gt;
-
-&lt;h3 id=&quot;stylish-blockquotes-included&quot;&gt;Stylish blockquotes included&lt;/h3&gt;
-
-&lt;p&gt;You can use the markdown quote syntax, &lt;code&gt;&amp;gt;&lt;/code&gt; for simple quotes.&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse quis porta mauris.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;However, you need to inject html if you&amp;rsquo;d like a citation footer. I will be working on a way to
-hopefully sidestep this inconvenience.&lt;/p&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;
-    Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.
-  &lt;/p&gt;
-  &lt;footer&gt;&lt;cite title=&quot;Antoine de Saint-Exupéry&quot;&gt;Antoine de Saint-Exupéry&lt;/cite&gt;&lt;/footer&gt;
-&lt;/blockquote&gt;
-
-&lt;h3 id=&quot;there&amp;#39;s-more-being-added-all-the-time&quot;&gt;There&amp;rsquo;s more being added all the time&lt;/h3&gt;
-
-&lt;p&gt;Checkout the &lt;a href=&quot;https://github.com/johnotander/pixyll&quot;&gt;Github repository&lt;/a&gt; to request,
-or add, features.&lt;/p&gt;
-
-&lt;p&gt;Happy writing.&lt;/p&gt;
+&lt;p&gt;It won&amp;rsquo;t be nearly as fast as dplyr, or nearly as robust as dplyr,
+but it could look and smell like dplyr.&lt;/p&gt;
 </description>
-        <pubDate>Tue, 10 Jun 2014 20:31:19 +0800</pubDate>
-        <link>http://datalove.org/jekyll/pixyll/2014/06/10/see-pixyll-in-action/</link>
-        <guid isPermaLink="true">http://datalove.org/jekyll/pixyll/2014/06/10/see-pixyll-in-action/</guid>
+        <pubDate>Sun, 25 Jan 2015 00:00:00 +0800</pubDate>
+        <link>http://datalove.org/r/dplyr/2015/01/25/dplyr-100-lines-01-intro/</link>
+        <guid isPermaLink="true">http://datalove.org/r/dplyr/2015/01/25/dplyr-100-lines-01-intro/</guid>
       </item>
     
   </channel>

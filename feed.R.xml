@@ -7,25 +7,39 @@
 		<atom:link href="http://datalove.org/feed.category.xml" rel="self" type="application/rss+xml" />
 		
 			<item>
-				<title>testing again</title>
+				<title>dplyr in 100 lines (Pt3 mutate)</title>
 				
-					<description>&lt;p&gt;Here&amp;rsquo;s some text&lt;/p&gt;
+					<description>&lt;h2 id=&quot;mutating-in-base-r&quot;&gt;Mutating in base R&lt;/h2&gt;
 </description>
 				
-				<pubDate>Wed, 07 Jan 2015 00:00:00 +0800</pubDate>
-				<link>http://datalove.org/r/2015/01/07/testing-again/</link>
-				<guid isPermaLink="true">http://datalove.org/r/2015/01/07/testing-again/</guid>
+				<pubDate>Tue, 27 Jan 2015 00:00:00 +0800</pubDate>
+				<link>http://datalove.org/r/dplyr/2015/01/27/dplyr-100-lines-03-mutate/</link>
+				<guid isPermaLink="true">http://datalove.org/r/dplyr/2015/01/27/dplyr-100-lines-03-mutate/</guid>
 			</item>
 		
 			<item>
-				<title>A touch of R</title>
+				<title>dplyr in 100 lines (Pt2 filter)</title>
 				
-					<description>&lt;p&gt;Just a test to see how well it deals with R and stuff.&lt;/p&gt;
+					<description>&lt;h2 id=&quot;replicating-filter&quot;&gt;Replicating &lt;code&gt;filter&lt;/code&gt;&lt;/h2&gt;
 </description>
 				
-				<pubDate>Tue, 06 Jan 2015 00:00:00 +0800</pubDate>
-				<link>http://datalove.org/r/2015/01/06/test-R-script/</link>
-				<guid isPermaLink="true">http://datalove.org/r/2015/01/06/test-R-script/</guid>
+				<pubDate>Mon, 26 Jan 2015 00:00:00 +0800</pubDate>
+				<link>http://datalove.org/r/dplyr/2015/01/26/dplyr-100-lines-02-filter/</link>
+				<guid isPermaLink="true">http://datalove.org/r/dplyr/2015/01/26/dplyr-100-lines-02-filter/</guid>
+			</item>
+		
+			<item>
+				<title>dplyr in 100 lines (Pt1 intro)</title>
+				
+					<description>&lt;p&gt;If you&amp;rsquo;ve been around R for a little while, you&amp;rsquo;ve most likely heard
+of Hadley Wickham. His amazing packages (including &lt;strong&gt;ggplot2&lt;/strong&gt;, &lt;strong&gt;reshape2&lt;/strong&gt;,
+&lt;strong&gt;plyr&lt;/strong&gt; and many more) have shaped the R ecosystem into what it is today.
+Without them, it&amp;rsquo;s unlikely I would have continued learning R.&lt;/p&gt;
+</description>
+				
+				<pubDate>Sun, 25 Jan 2015 00:00:00 +0800</pubDate>
+				<link>http://datalove.org/r/dplyr/2015/01/25/dplyr-100-lines-01-intro/</link>
+				<guid isPermaLink="true">http://datalove.org/r/dplyr/2015/01/25/dplyr-100-lines-01-intro/</guid>
 			</item>
 		
 	</channel>

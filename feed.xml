@@ -7,6 +7,48 @@
     <atom:link href="http://datalove.org/feed.xml" rel="self" type="application/rss+xml" />
     
       <item>
+        <title>Testing knitr</title>
+        <description>&lt;p&gt;This is a test of things to come.&lt;/p&gt;
+
+&lt;h3 id=&quot;my-headings-and-stuff&quot;&gt;My headings and stuff&lt;/h3&gt;
+
+&lt;p&gt;asdfsadfsa
+asdfdsfa
+asdf&lt;/p&gt;
+
+&lt;p&gt;asdfa df
+sadf as&lt;/p&gt;
+
+&lt;h3 id=&quot;r-codes&quot;&gt;R codes&lt;/h3&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;kp&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;##                    mpg cyl disp  hp drat    wt  qsec vs am gear carb
+## Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+## Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+## Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+## Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+## Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+## Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;and now&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;kp&quot;&gt;head&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;iris&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;##   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+## 1          5.1         3.5          1.4         0.2  setosa
+## 2          4.9         3.0          1.4         0.2  setosa
+## 3          4.7         3.2          1.3         0.2  setosa
+## 4          4.6         3.1          1.5         0.2  setosa
+## 5          5.0         3.6          1.4         0.2  setosa
+## 6          5.4         3.9          1.7         0.4  setosa&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+</description>
+        <pubDate>Mon, 02 Feb 2015 00:00:00 +0800</pubDate>
+        <link>http://datalove.org/r/dplyr/2015/02/02/testing-knitr/</link>
+        <guid isPermaLink="true">http://datalove.org/r/dplyr/2015/02/02/testing-knitr/</guid>
+      </item>
+    
+      <item>
         <title>dplyr in 100 lines (Pt3 mutate)</title>
         <description>&lt;h2 id=&quot;mutating-in-base-r&quot;&gt;Mutating in base R&lt;/h2&gt;
 
@@ -132,15 +174,11 @@ part.&lt;/p&gt;
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-rconsole&quot; data-lang=&quot;rconsole&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;mutate2&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;  lpk &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; mpg &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1.61&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3.76&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; good_mpg &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; mpg &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 &lt;p&gt;asdff&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;               mpg  cyl  disp  hp drat    wt  qsec vs am gear carb       new      lpk good_mpg
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;p&gt;Mazda RX4           21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4  8.992021 8.992021    FALSE
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-text&quot; data-lang=&quot;text&quot;&gt;                    mpg  cyl  disp  hp drat    wt  qsec vs am gear carb       new      lpk good_mpg
+Mazda RX4           21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4  8.992021 8.992021    FALSE
 Mazda RX4 Wag       21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4  8.992021 8.992021    FALSE
-Datsun 710          22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1  9.762766 9.762766    FALSE&lt;/p&gt;
-&lt;/blockquote&gt;
-
+Datsun 710          22.8   4 108.0  93 3.85 2.320 18.61  1  1    4    1  9.762766 9.762766    FALSE
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;asdfsdf&lt;/p&gt;
 
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;dplyr&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;mutate&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; lpk &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; mpg &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1.61&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;/&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;3.76&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
@@ -242,6 +280,8 @@ filter arguments as shown below.&lt;/p&gt;
 &lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-rconsole&quot; data-lang=&quot;rconsole&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;dplyr&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;filter&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;mtcars&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; mpg &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; carb &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; gear &lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;go&quot;&gt;mpg cyl disp  hp drat    wt qsec vs am gear carb&lt;/span&gt;
 &lt;span class=&quot;go&quot;&gt;1 30.4   4 95.1 113 3.77 1.513 16.9  1  1    5    2&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;i&lt;/p&gt;
 
 &lt;h2 id=&quot;attempt-#3&quot;&gt;Attempt #3&lt;/h2&gt;
 

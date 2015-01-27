@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>dplyr in 100 lines (Pt2 filter) &#8211; Datalove</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Perhaps the simplest function to implement, filter allows us to subset our data.">
+    <meta name="author" content="Tommy O'Dell">
+    <meta name="keywords" content="r, dplyr">
+    <link rel="canonical" href="http://datalove.org/r/dplyr/2015/01/26/dplyr-100-lines-02-filter/">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/pixyll.css" type="text/css">
+
+    <!-- Fonts -->
+    <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+    
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    
+
+    <!-- Open Graph -->
+    <!-- From: https://github.com/mmistakes/hpstr-jekyll-theme/blob/master/_includes/head.html -->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="dplyr in 100 lines (Pt2 filter)">
+    <meta property="og:description" content="Oh for the love of data!">
+    <meta property="og:url" content="http://datalove.org/r/dplyr/2015/01/26/dplyr-100-lines-02-filter/">
+    <meta property="og:site_name" content="Datalove">
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="apple-touch-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="apple-touch-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="apple-touch-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon-180x180.png">
+    <link rel="icon" type="image/png" href="favicon-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="favicon-160x160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+</head>
+
+<body class="animated fade-in-down">
+  <div class="site-wrap">
+    <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="http://datalove.org" class="site-title">Datalove</a>
+      <nav class="site-nav right">
+        <a href="/about/">About</a>
+<a href="/contact/">Contact</a>
+
+      </nav>
+      <div class="clearfix"></div>
+      
+        <div class="social-icons">
+  <div class="left">
+    
+      <a class="fa fa-github" href="https://github.com/datalove"></a>
+    
+    
+    <a class="fa fa-rss" href="/feed.xml"></a>
+    
+      <a class="fa fa-twitter" href="https://twitter.com/tommyodell"></a>
+    
+    
+    
+    
+      <a class="fa fa-linkedin" href="https://www.linkedin.com/in/tommyodell"></a>
+    
+  </div>
+  <div class="right">
+    
+    
+    
+  </div>
+</div>
+<div class="clearfix"></div>
+
+      
+    </div>
+  </div>
+</header>
+
+
+    <div class="post p2 p-responsive wrap" role="main">
+      <div class="measure">
+        
+
+
+<div class="post-header mb2">
+  <h1>dplyr in 100 lines (Pt2 filter)</h1>
+  <span class="post-meta">Jan 26, 2015</span><br>
+  
+  <span class="post-meta small">5 minute read</span>
+</div>
+
+<article class="post-content">
+  <h2 id="replicating-filter">Replicating <code>filter</code></h2>
+
+<p>The most common way to subset a data frame in R is to use the <code>[]</code> function.</p>
+
+<p>If you wanted to see only cars form the 
+<code class="highlight language-r" data-lang="r">mtcars</code>
+ data set, you do something like
+this.  </p>
+
+<div class="highlight"><pre><code class="language-rconsole" data-lang="rconsole"><span class="gp">&gt; </span>mtcars<span class="p">[</span>mpg <span class="o">&gt;</span> <span class="m">30</span><span class="p">,]</span>
+<span class="go">Error in `[.data.frame`(mtcars, mpg &gt; 30, ) : object &#39;mpg&#39; not found</span></code></pre></div>
+
+<p>Oops! We forgot to tell R that <code>mpg</code> is a column in <code>mtcars</code>, and not a variable
+in our environment.</p>
+
+<div class="highlight"><pre><code class="language-rconsole" data-lang="rconsole"><span class="gp">&gt; </span>mtcars<span class="p">[</span>mtcars<span class="o">$</span>mpg <span class="o">&gt;</span> <span class="m">30</span><span class="p">,]</span>
+<span class="go">mpg cyl disp  hp drat    wt  qsec vs am gear carb</span>
+<span class="go">Fiat 128       32.4   4 78.7  66 4.08 2.200 19.47  1  1    4    1</span>
+<span class="go">Honda Civic    30.4   4 75.7  52 4.93 1.615 18.52  1  1    4    2</span>
+<span class="go">Toyota Corolla 33.9   4 71.1  65 4.22 1.835 19.90  1  1    4    1</span>
+<span class="go">Lotus Europa   30.4   4 95.1 113 3.77 1.513 16.90  1  1    5    2</span></code></pre></div>
+
+<h2 id="attempt-#1">Attempt #1</h2>
+
+<p>We&rsquo;ll use R&rsquo;s built in subsetting operator, writing a function to accept a dataframe
+and a filtering expression (i.e. the 
+<code class="highlight language-r" data-lang="r">mpg <span class="o">&gt;</span> <span class="m">30</span></code>
+ part)</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">filter2 <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>data<span class="p">,</span>expr<span class="p">)</span> <span class="p">{</span> data<span class="p">[</span>expr<span class="p">,]</span> <span class="p">}</span></code></pre></div>
+
+<p>Let&rsquo;s try our first function.</p>
+
+<div class="highlight"><pre><code class="language-rconsole" data-lang="rconsole"><span class="gp">&gt; </span>filter2<span class="p">(</span>mtcars<span class="p">,</span> mpg <span class="o">&gt;</span> <span class="m">30</span><span class="p">)</span>
+<span class="go">Error in `[.data.frame`(data, expr, ) : object &#39;mpg&#39; not found</span></code></pre></div>
+
+<p>No luck! Que pasa? We get the error we had previously.</p>
+
+<p>Let&rsquo;s investigate by changing our function to print the value if the expression argument.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="o">&gt;</span> filter2 <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>data<span class="p">,</span>expr<span class="p">)</span> <span class="p">{</span> <span class="kp">print</span><span class="p">(</span>expr<span class="p">)</span> <span class="p">}</span></code></pre></div>
+
+<p>And run it again.</p>
+
+<div class="highlight"><pre><code class="language-rconsole" data-lang="rconsole"><span class="gp">&gt; </span>filter2<span class="p">(</span>mtcars<span class="p">,</span> mpg <span class="o">&gt;</span> <span class="m">30</span><span class="p">)</span>
+<span class="go">Error in print(expr) : object &#39;mpg&#39; not found</span>
+<span class="go">In addition: Warning message:</span>
+<span class="go">In print(expr) : restarting interrupted promise evaluation</span></code></pre></div>
+
+<p>No love either. What&rsquo;s going on?</p>
+
+<p>Looks like R tries (and fails) to evaluate 
+<code class="highlight language-r" data-lang="r">mpg <span class="o">&gt;</span> <span class="m">30</span></code></p>
+
+<p>as soon as we try to do anything with it&hellip;</p>
+
+<h2 id="attempt-#2">Attempt #2</h2>
+
+<p>What we need is <code>substitute()</code>, a special primitive function that does not evaluate its
+arguments and returns a <code>call</code> object that can be evaluated later.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">filter2 <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>data<span class="p">,</span>expr<span class="p">)</span> <span class="p">{</span> <span class="kp">print</span><span class="p">(</span><span class="kp">substitute</span><span class="p">(</span>expr<span class="p">))</span> <span class="p">}</span></code></pre></div>
+
+<p>And now it works. A great first step!</p>
+
+<div class="highlight"><pre><code class="language-rconsole" data-lang="rconsole"><span class="gp">&gt; </span>filter2<span class="p">(</span>mtcars<span class="p">,</span> mpg <span class="o">&gt;</span> <span class="m">30</span><span class="p">)</span>
+<span class="go">mpg &gt; 30</span></code></pre></div>
+
+<p>Because <code>substitute()</code> returns an unevaluated call, we&rsquo;ll need to use it in
+conjunction with the <code>eval()</code> function.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r"><span class="o">&gt;</span> filter2 <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>data<span class="p">,</span>expr<span class="p">)</span> <span class="p">{</span> data<span class="p">[</span><span class="kp">eval</span><span class="p">(</span><span class="kp">substitute</span><span class="p">(</span>expr<span class="p">),</span> data<span class="p">),</span> <span class="p">]}</span></code></pre></div>
+
+<p>And&hellip;.</p>
+
+<div class="highlight"><pre><code class="language-rconsole" data-lang="rconsole"><span class="gp">&gt; </span>filter2<span class="p">(</span>mtcars<span class="p">,</span> mpg <span class="o">&gt;</span> <span class="m">30</span><span class="p">)</span>
+<span class="go">mpg cyl disp  hp drat    wt  qsec vs am gear carb</span>
+<span class="go">Fiat 128       32.4   4 78.7  66 4.08 2.200 19.47  1  1    4    1</span>
+<span class="go">Honda Civic    30.4   4 75.7  52 4.93 1.615 18.52  1  1    4    2</span>
+<span class="go">Toyota Corolla 33.9   4 71.1  65 4.22 1.835 19.90  1  1    4    1</span>
+<span class="go">Lotus Europa   30.4   4 95.1 113 3.77 1.513 16.90  1  1    5    2</span></code></pre></div>
+
+<p>Congrats! Our first working version of <code>filter2()</code>.</p>
+
+<p>We still have a bit of work to do though - <code>dplyr::filter</code> can take any number of
+filter arguments as shown below.</p>
+
+<div class="highlight"><pre><code class="language-rconsole" data-lang="rconsole"><span class="gp">&gt; </span>dplyr<span class="o">::</span>filter<span class="p">(</span>mtcars<span class="p">,</span> mpg <span class="o">&gt;</span> <span class="m">30</span><span class="p">,</span> carb <span class="o">==</span> <span class="m">2</span><span class="p">,</span> gear <span class="o">&gt;</span> <span class="m">4</span><span class="p">)</span>
+<span class="go">mpg cyl disp  hp drat    wt qsec vs am gear carb</span>
+<span class="go">1 30.4   4 95.1 113 3.77 1.513 16.9  1  1    5    2</span></code></pre></div>
+
+<p>i</p>
+
+<h2 id="attempt-#3">Attempt #3</h2>
+
+<p>What changes do we need to make to <code>filter2()</code>?</p>
+
+<p>Adding a <code>...</code> argument to our function will allow us to specify an arbitrary
+number of filtering expressions.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">filter2 <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>data<span class="p">,</span> <span class="kc">...</span><span class="p">)</span></code></pre></div>
+
+<p>And the <code>alist()</code> function is useful with <code>...</code> to capture a number of
+expressions as function input. Inside <code>filter2()</code> we&rsquo;ll stil need to use <code>eval</code>
+and <code>substitute</code> as before.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">expr <span class="o">&lt;-</span> <span class="kp">eval</span><span class="p">(</span><span class="kp">substitute</span><span class="p">(</span><span class="kp">alist</span><span class="p">(</span><span class="kc">...</span><span class="p">)))</span></code></pre></div>
+
+<p>Then we can access each filter expression supplied by the user by
+subsetting the list of arguments like 
+<code class="highlight language-r" data-lang="r">expr<span class="p">[[</span><span class="m">1</span><span class="p">]]</span></code>
+ or 
+<code class="highlight language-r" data-lang="r">expr<span class="p">[[</span><span class="m">2</span><span class="p">]]</span></code>
+. What we now want to do is repeatedly filter our
+data for each item in the <code>expr</code> list.</p>
+
+<p>In most situations in R, we want to use <code>lapply</code> to do something to each element
+in a list. But in this case, we can&rsquo;t use it since we want pass the filtered
+results from each expression to the next. Here, a <code>for</code> loop is most
+appropriate.</p>
+
+<p>That leads us to our final function.</p>
+
+<div class="highlight"><pre><code class="language-r" data-lang="r">filter2 <span class="o">&lt;-</span> <span class="kr">function</span><span class="p">(</span>data<span class="p">,</span> <span class="kc">...</span><span class="p">)</span> <span class="p">{</span>
+
+  expr <span class="o">&lt;-</span> <span class="kp">eval</span><span class="p">(</span><span class="kp">substitute</span><span class="p">(</span><span class="kp">alist</span><span class="p">(</span><span class="kc">...</span><span class="p">)))</span>
+
+  <span class="kr">for</span><span class="p">(</span>i <span class="kr">in</span> <span class="kp">seq_along</span><span class="p">(</span>expr<span class="p">))</span> <span class="p">{</span>
+    e <span class="o">&lt;-</span> expr<span class="p">[[</span>i<span class="p">]]</span>  
+    data <span class="o">&lt;-</span> data<span class="p">[</span><span class="kp">eval</span><span class="p">(</span>e<span class="p">,</span>data<span class="p">),</span> <span class="p">]</span>
+  <span class="p">}</span>  
+  data
+<span class="p">}</span></code></pre></div>
+
+<h3 id="testing-filter2()">Testing <code>filter2()</code></h3>
+
+<div class="highlight"><pre><code class="language-rconsole" data-lang="rconsole"><span class="gp">&gt; </span>filter2<span class="p">(</span>mtcars<span class="p">,</span> mpg <span class="o">&gt;</span> <span class="m">30</span><span class="p">,</span> carb <span class="o">==</span> <span class="m">2</span><span class="p">,</span> gear <span class="o">&gt;</span> <span class="m">4</span><span class="p">)</span>
+<span class="go">mpg cyl disp  hp drat    wt qsec vs am gear carb</span>
+<span class="go">1 30.4   4 95.1 113 3.77 1.513 16.9  1  1    5    2</span></code></pre></div>
+
+<p>And pleasingly, we don&rsquo;t need anything extra to cater for more complex
+filter expressions like the ones below, which filters out the bottom 80% least
+fuel efficient cars, and keeps only those whose displacement per cylinder
+exceeds 3o cubic inches per cylinder.</p>
+
+<div class="highlight"><pre><code class="language-rconsole" data-lang="rconsole"><span class="gp">&gt; </span>filter2<span class="p">(</span>mtcars<span class="p">,</span> mpg <span class="o">&gt;</span> quantile<span class="p">(</span>mpg<span class="p">,</span> <span class="m">0.80</span><span class="p">),</span> disp<span class="o">/</span>cyl <span class="o">&gt;</span> <span class="m">30</span><span class="p">)</span>
+<span class="go">mpg           cyl  disp hp drat   wt qsec vs am gear carb</span>
+<span class="go">Merc 240D     24.4   4 146.7 62 3.69 3.19 20.0  1  0    4    2</span>
+<span class="go">Porsche 914-2 26.0   4 120.3 91 4.43 2.14 16.7  0  1    5    2</span></code></pre></div>
+
+<p>In the next section, we&rsquo;ll build <code>mutate2()</code>.</p>
+
+</article>
+
+
+
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname  = 'datalove';
+    var disqus_identifier = '/r/dplyr/2015/01/26/dplyr-100-lines-02-filter';
+
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+  <div class="p2 wrap">
+    <div class="measure mt1 center">
+      <small>
+        <a href="http://tommyodell.com">Tommy Marcel O'Dell</a>.
+      </small>
+    </div>
+  </div>
+</footer>
+
+
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-58321501-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+
+
+
+
+</body>
+</html>
